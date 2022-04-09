@@ -1,6 +1,7 @@
-from backend import load_corpus, load_bi_encoder, load_cross_encoder, embed_corpus, embed_corpus_bm25, bm25_tokenizer, search
+# from backend import load_corpus, load_bi_encoder, load_cross_encoder, embed_corpus, embed_corpus_bm25, bm25_tokenizer, search
 from flask import jsonify
 
+from api.backend import load_corpus, load_bi_encoder, load_cross_encoder, embed_corpus, embed_corpus_bm25, search
 
 passages = load_corpus(wikipedia_filepath='../Data/simplewiki-2020-11-01.jsonl.gz')
 bi_encoder = load_bi_encoder()
@@ -13,6 +14,6 @@ print("Backend initialized!")
 
 
 def score(query, top_k=32):
-    response = search(query, passages, corpus_embeddings, bm25, bi_encoder, cross_encoder, top_k=top_k)
-    return response
+    response, embeddings = search(query, passages, corpus_embeddings, bm25, bi_encoder, cross_encoder, top_k=top_k)
+    return response, embeddings
 

@@ -1,5 +1,6 @@
 from dash import dcc, html, dash_table
 import plotly.graph_objs as go
+from api import reduce
 
 
 def show_architecture():
@@ -62,7 +63,11 @@ def show_answers(response, value):
     return output
 
 
-def show_embeddings(response):
+def show_embeddings(response, embeddings):
+    emb = reduce(embeddings)
+    response["bi_encoder_emb_X"] = emb[:, 0]
+    response["bi_encoder_emb_Y"] = emb[:, 1]
+
     bi_encoder_emb_X = response["bi_encoder_emb_X"].iloc[1:]
     bi_encoder_emb_Y = response["bi_encoder_emb_Y"].iloc[1:]
     bi_encoder_scores = response["bi_encoder_scores"].iloc[1:]
@@ -99,7 +104,11 @@ def show_embeddings(response):
         height=1024,
     )
     output = html.Div([
-        html.H3("Embeddings of the 200 most relevant documents.<br>Yellow is most relevant, and blue is least relevant<br>Green is the question"),
+        html.H3("Embeddings of the 200 most relevant answers for the given question"),
+        html.Br(),
+        html.P("The green dot represents the question"),
+        html.Br(),
+        html.P("The yellow dots are the most relevant-, and the blue the least relevant answers"),
         dcc.Graph(figure=fig)
     ])
     return output

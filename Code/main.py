@@ -1,14 +1,16 @@
-
 import dash
 import dash_bootstrap_components as dbc
 import flask
-from dash import Input, Output, dcc, html, dash_table
+from dash import Input, Output, dcc, html
 
-from view import show_answers, show_embeddings, show_architecture
 from api import score
+from view import show_answers, show_embeddings, show_architecture
 
 global response
+global embeddings
+
 response = None
+embeddings = None
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
@@ -70,9 +72,11 @@ app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 )
 def update_output(value, n_clicks, tab):
     global response
+    global embeddings
+
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if "submit-query.n_clicks" in changed_id:
-        response = score(query=value, top_k=200)
+        response, embeddings = score(query=value, top_k=200)
 
     if response is None:
         return html.Div([])
@@ -80,7 +84,7 @@ def update_output(value, n_clicks, tab):
     if tab == 'answer-tab':
         return show_answers(response, value)
     elif tab == 'embedding-tab':
-        return show_embeddings(response)
+        return show_embeddings(response, embeddings)
     else:
         return show_architecture()
 
@@ -93,4 +97,5 @@ def serve_image(image_path):
 
 
 if __name__ == "__main__":
+    print("Starting server")
     app.run_server(port=8050, debug=True)

@@ -173,11 +173,11 @@ def search(query, passages, corpus_embeddings, bm25, bi_encoder, cross_encoder, 
         bi_encoder_answers.append(answer)
         bi_encoder_scores.append(score)
         emb.append(corpus_embeddings[hit['corpus_id']].cpu().numpy())
-    emb = reduce(emb)
+    # emb = reduce(emb)
     df["bi_encoder"] = bi_encoder_answers
     df["bi_encoder_scores"] = bi_encoder_scores
-    df["bi_encoder_emb_X"] = emb[:, 0]
-    df["bi_encoder_emb_Y"] = emb[:, 1]
+    # df["bi_encoder_emb_X"] = emb[:, 0]
+    # df["bi_encoder_emb_Y"] = emb[:, 1]
 
 
     # Output of top-5 hits from re-ranker
@@ -198,7 +198,7 @@ def search(query, passages, corpus_embeddings, bm25, bi_encoder, cross_encoder, 
     df["cross_encoder"] = cross_encoder_answers
     df["cross_encoder_scores"] = cross_encoder_scores
 
-    return df
+    return df, emb
 
 
 def reduce(embeddings):
