@@ -1,14 +1,11 @@
-from contextlib import redirect_stderr
 
 import dash
 import dash_bootstrap_components as dbc
 import flask
 from dash import Input, Output, dcc, html, dash_table
 
-from Web.view import show_answers, show_embeddings, show_architecture
+from view import show_answers, show_embeddings, show_architecture
 from api import score
-import plotly.express as px
-import plotly.graph_objs as go
 
 global response
 response = None
@@ -42,7 +39,6 @@ sidebar = html.Div(
         html.Hr(),
         html.P("I will be using BERT and the power of Cross-encoding to answer your questions.", className="lead"),
         html.P("Go ahead and ask me anything!", className="lead"),
-        # dcc.Input(value='', type='text', size="40"),
         dcc.Textarea(
             id='query-text',
             value='what is the capital of Norway',
@@ -54,9 +50,7 @@ sidebar = html.Div(
     style=SIDEBAR_STYLE,
 )
 
-# content = html.Div(id="page-content", style=CONTENT_STYLE)
 content = html.Div([
-    # html.H1('Demo stuff'),
     dcc.Tabs(id="tabs-container", value='answer-tab', children=[
         dcc.Tab(label='Answers', value='answer-tab'),
         dcc.Tab(label='Embeddings', value='embedding-tab'),

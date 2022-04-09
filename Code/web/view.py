@@ -1,16 +1,9 @@
-from contextlib import redirect_stderr
-
-import dash
-import dash_bootstrap_components as dbc
-from dash import Input, Output, dcc, html, dash_table
-from api import score
-import plotly.express as px
+from dash import dcc, html, dash_table
 import plotly.graph_objs as go
 
 
 def show_architecture():
     return html.Div([
-        # html.Img(id='architecture_img', src="https://raw.githubusercontent.com/UKPLab/sentence-transformers/master/docs/img/Bi_vs_Cross-Encoder.png", alt="An image should be here...")
         html.Img(id='bi_encoder_img', src="/static/Bi_Encoder.png"),
         html.Br(),
         html.Img(id='cross_encoder_img', src="/static/Cross_Encoder.png")
@@ -69,7 +62,6 @@ def show_answers(response, value):
     return output
 
 
-
 def show_embeddings(response):
     bi_encoder_emb_X = response["bi_encoder_emb_X"].iloc[1:]
     bi_encoder_emb_Y = response["bi_encoder_emb_Y"].iloc[1:]
@@ -90,7 +82,6 @@ def show_embeddings(response):
     )
     q_bi_encoder_emb_X = response["bi_encoder_emb_X"].iloc[0:1]
     q_bi_encoder_emb_Y = response["bi_encoder_emb_Y"].iloc[0:1]
-    # q_bi_encoder_scores = response["bi_encoder_scores"].iloc[0:1]
     fig.add_trace(
         go.Scatter(
             mode="markers",
