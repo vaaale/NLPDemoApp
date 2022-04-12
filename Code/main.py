@@ -4,7 +4,7 @@ import flask
 from dash import Input, Output, dcc, html
 
 from api import score
-from view import show_answers, show_embeddings, show_architecture
+from view import show_answers, show_embeddings, show_architecture, show_extractive_qa
 
 global response
 global embeddings
@@ -56,6 +56,7 @@ content = html.Div([
     dcc.Tabs(id="tabs-container", value='answer-tab', children=[
         dcc.Tab(label='Answers', value='answer-tab'),
         dcc.Tab(label='Embeddings', value='embedding-tab'),
+        dcc.Tab(label='Extractive QA', value='extractive-qa-tab'),
         dcc.Tab(label='Architecture', value='architecture-tab'),
     ]),
     html.Div(id="page-content")
@@ -70,21 +71,23 @@ app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
     Input(component_id='submit-query', component_property='n_clicks'),
     Input('tabs-container', 'value')
 )
-def update_output(value, n_clicks, tab):
+def update_output(question, n_clicks, tab):
     global response
     global embeddings
 
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if "submit-query.n_clicks" in changed_id:
-        response, embeddings = score(query=value, top_k=200)
+        response, embeddings = score(query=question, top_k=200)
 
     if response is None:
         return html.Div([])
 
     if tab == 'answer-tab':
-        return show_answers(response, value)
+        return show_answers(response, question)
     elif tab == 'embedding-tab':
         return show_embeddings(response, embeddings)
+    elif tab == 'extractive-qa-tab':
+        return show_extractive_qa(question)
     else:
         return show_architecture()
 

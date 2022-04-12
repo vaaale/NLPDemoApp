@@ -1,6 +1,26 @@
 from dash import dcc, html, dash_table
 import plotly.graph_objs as go
-from api import reduce
+from api import reduce, exact_answer
+
+
+def show_extractive_qa(question):
+    if len(question) < 1:
+        return html.Div([])
+
+    response, context = exact_answer(question, top_k=3)
+    return html.Div([
+        html.Div([
+            html.H2("Question:"),
+            html.P(question),
+            html.Br(),
+            html.H2("Answer:"),
+            html.P(response["answer"])
+        ]),
+        html.Div([
+            html.H3("The context given to the model was:"),
+            html.P(context)
+        ])
+    ])
 
 
 def show_architecture():
