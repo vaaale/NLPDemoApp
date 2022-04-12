@@ -44,7 +44,6 @@ def load_bi_encoder(model_name='multi-qa-MiniLM-L6-cos-v1', model_path="../Model
         bi_encoder = SentenceTransformer(model_name)
     else:
         bi_encoder = SentenceTransformer(model_path)
-    bi_encoder.eval()
     bi_encoder.max_seq_length = 256     #Truncate long passages to 256 tokens
     return bi_encoder
 
@@ -55,7 +54,6 @@ def load_cross_encoder(model_name='cross-encoder/ms-marco-MiniLM-L-6-v2', model_
         cross_encoder = CrossEncoder(model_name)
     else:
         cross_encoder = CrossEncoder(model_path)
-    cross_encoder.eval()
     return cross_encoder
 
 
