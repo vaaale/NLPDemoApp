@@ -1,13 +1,30 @@
 from dash import dcc, html, dash_table
 import plotly.graph_objs as go
-from api import reduce, exact_answer
 
 
-def show_extractive_qa(question):
+def show_abstractive_qa(question, abstractive_api):
     if len(question) < 1:
         return html.Div([])
 
-    response, context = exact_answer(question, top_k=3)
+    answer, context = abstractive_api.answer(question)
+    output = html.Div([
+        html.H2("Question:"),
+        html.P(question),
+        html.Br(),
+        html.H2("Answer:"),
+        html.P(answer),
+        html.H2("Context given to model:"),
+        html.P(context)
+    ])
+
+    return output
+
+
+def show_extractive_qa(question, api):
+    if len(question) < 1:
+        return html.Div([])
+
+    response, context = api.exact_answer(question, top_k=3)
     return html.Div([
         html.Div([
             html.H2("Question:"),
@@ -83,8 +100,8 @@ def show_answers(response, value):
     return output
 
 
-def show_embeddings(response, embeddings):
-    emb = reduce(embeddings)
+def show_embeddings(response, embeddings, api):
+    emb = api.reduce(embeddings)
     response["bi_encoder_emb_X"] = emb[:, 0]
     response["bi_encoder_emb_Y"] = emb[:, 1]
 

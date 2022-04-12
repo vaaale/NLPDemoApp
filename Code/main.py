@@ -3,11 +3,13 @@ import dash_bootstrap_components as dbc
 import flask
 from dash import Input, Output, dcc, html
 
-from api import score
-from view import show_answers, show_embeddings, show_architecture, show_extractive_qa
+from api import ExtractiveAPI, AbstractiveAPI
+from view import show_answers, show_embeddings, show_architecture, show_extractive_qa, show_abstractive_qa
 
 global response
 global embeddings
+global extractive_api
+global abstractive_api
 
 response = None
 embeddings = None
@@ -43,7 +45,7 @@ sidebar = html.Div(
         html.P("Go ahead and ask me anything!", className="lead"),
         dcc.Textarea(
             id='query-text',
-            value='what is the capital of Norway',
+            value='what is the capital of Norway?',
             placeholder='Ask me something',
             style={'width': '100%', 'height': 300},
         ),
@@ -57,6 +59,7 @@ content = html.Div([
         dcc.Tab(label='Answers', value='answer-tab'),
         dcc.Tab(label='Embeddings', value='embedding-tab'),
         dcc.Tab(label='Extractive QA', value='extractive-qa-tab'),
+        dcc.Tab(label='Abstractive QA', value='abstractive-qa-tab'),
         dcc.Tab(label='Architecture', value='architecture-tab'),
     ]),
     html.Div(id="page-content")
@@ -77,7 +80,7 @@ def update_output(question, n_clicks, tab):
 
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if "submit-query.n_clicks" in changed_id:
-        response, embeddings = score(query=question, top_k=200)
+        response, embeddings = extractive_api.score(query=question, top_k=200)
 
     if response is None:
         return html.Div([])
@@ -85,9 +88,11 @@ def update_output(question, n_clicks, tab):
     if tab == 'answer-tab':
         return show_answers(response, question)
     elif tab == 'embedding-tab':
-        return show_embeddings(response, embeddings)
+        return show_embeddings(response, embeddings, extractive_api)
     elif tab == 'extractive-qa-tab':
-        return show_extractive_qa(question)
+        return show_extractive_qa(question, extractive_api)
+    elif tab == 'abstractive-qa-tab':
+        return show_abstractive_qa(question, abstractive_api)
     else:
         return show_architecture()
 
@@ -100,5 +105,9 @@ def serve_image(image_path):
 
 
 if __name__ == "__main__":
+    print("Creating API")
+    extractive_api = ExtractiveAPI()
+    abstractive_api = AbstractiveAPI()
+
     print("Starting server")
-    app.run_server(port=8050, debug=True)
+    app.run_server(port=8050, debug=True, use_reloader=False)

@@ -1,3 +1,3 @@
-from .api_impl import score, exact_answer
+from .api_impl import ExtractiveAPI, AbstractiveAPI
 from .backend import reduce
 
