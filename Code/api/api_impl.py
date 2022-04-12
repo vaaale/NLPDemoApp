@@ -28,11 +28,11 @@ class AbstractiveAPI:
             )
 
             wiki40b_index_flat = faiss.IndexFlatIP(128)
-            faiss.write_index(wiki40b_index_flat, index_file)
             self.wiki40b_gpu_index = faiss.index_cpu_to_gpu(faiss_res, 0, wiki40b_index_flat)
             self.wiki40b_gpu_index.add(wiki40b_passage_reps)
+            faiss.write_index(wiki40b_index_flat, index_file)
         else:
-            wiki40b_index_flat = faiss.read_index("../Data/wiki40b_index_flat.ind")
+            wiki40b_index_flat = faiss.read_index(index_file)
             faiss_res = faiss.StandardGpuResources()
             self.wiki40b_gpu_index = faiss.index_cpu_to_gpu(faiss_res, 0, wiki40b_index_flat)
 
