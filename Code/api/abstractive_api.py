@@ -4,7 +4,7 @@ import faiss
 import numpy as np
 
 from transformers import AutoTokenizer, AutoModel, AutoModelForSeq2SeqLM
-from lfqa_utils import query_qa_dense_index, qa_s2s_generate
+from .lfqa_utils import query_qa_dense_index, qa_s2s_generate
 
 
 class AbstractiveAPI:
