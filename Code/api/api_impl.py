@@ -18,23 +18,16 @@ class AbstractiveAPI:
             self.wiki40b_snippets = pickle.load(inp)
         self.eli5 = nlp.load_dataset('eli5')
 
-        index_file = "../Data/wiki40b_index_flat.ind"
-        if not os.path.isfile(index_file):
-            faiss_res = faiss.StandardGpuResources()
-            wiki40b_passage_reps = np.memmap(
-                '../Data/wiki40b_passages_reps_32_l-8_h-768_b-512-512.dat',
-                dtype='float32', mode='r',
-                shape=(self.wiki40b_snippets.num_rows, 128)
-            )
+        faiss_res = faiss.StandardGpuResources()
+        wiki40b_passage_reps = np.memmap(
+            '../Data/wiki40b_passages_reps_32_l-8_h-768_b-512-512.dat',
+            dtype='float32', mode='r',
+            shape=(self.wiki40b_snippets.num_rows, 128)
+        )
 
-            wiki40b_index_flat = faiss.IndexFlatIP(128)
-            self.wiki40b_gpu_index = faiss.index_cpu_to_gpu(faiss_res, 0, wiki40b_index_flat)
-            self.wiki40b_gpu_index.add(wiki40b_passage_reps)
-            faiss.write_index(wiki40b_index_flat, index_file)
-        else:
-            wiki40b_index_flat = faiss.read_index(index_file)
-            faiss_res = faiss.StandardGpuResources()
-            self.wiki40b_gpu_index = faiss.index_cpu_to_gpu(faiss_res, 0, wiki40b_index_flat)
+        wiki40b_index_flat = faiss.IndexFlatIP(128)
+        self.wiki40b_gpu_index = faiss.index_cpu_to_gpu(faiss_res, 0, wiki40b_index_flat)
+        self.wiki40b_gpu_index.add(wiki40b_passage_reps)
 
         self.qar_tokenizer = AutoTokenizer.from_pretrained('yjernite/retribert-base-uncased')
         self.qar_model = AutoModel.from_pretrained('yjernite/retribert-base-uncased').to('cuda:0')

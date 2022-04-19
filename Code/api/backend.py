@@ -60,14 +60,6 @@ def load_cross_encoder(model_name='cross-encoder/ms-marco-MiniLM-L-6-v2', model_
 def embed_corpus(passages, corpus_embedding_filename="../Data/corpus_embeddings.pk", bi_encoder=None):
     if not os.path.isfile(corpus_embedding_filename):
         bi_encoder = load_bi_encoder()
-        # As dataset, we use Simple English Wikipedia. Compared to the full English wikipedia, it has only
-        # about 170k articles. We split these articles into paragraphs and encode them with the bi-encoder
-
-        # wikipedia_filepath = '../Data/simplewiki-2020-11-01.jsonl.gz'
-        #
-        # passages = load_corpus(wikipedia_filepath)
-        #
-        # We encode all passages into our vector space. This takes about 5 minutes (depends on your GPU speed)
         corpus_embeddings = bi_encoder.encode(passages, convert_to_tensor=True, show_progress_bar=True, batch_size=512)
         with open(corpus_embedding_filename, "wb") as out:
             pickle.dump(corpus_embeddings, out)
